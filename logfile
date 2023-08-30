@@ -22,3 +22,6 @@
 2023-08-30 13:49:16.745 CDT [76845] FATAL:  database "mydatabase" does not exist
 2023-08-30 13:50:07.000 CDT [76858] FATAL:  role "postgres" does not exist
 2023-08-30 13:52:14.423 CDT [76909] FATAL:  database "mydatase" does not exist
+2023-08-30 18:11:23.594 CDT [83155] ERROR:  null value in column "created_at" of relation "jwt_token_blocklist" violates not-null constraint
+2023-08-30 18:11:23.594 CDT [83155] DETAIL:  Failing row contains (1, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdHQ..., null).
+2023-08-30 18:11:23.594 CDT [83155] STATEMENT:  INSERT INTO jwt_token_blocklist (jwt_token, created_at) VALUES ('eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdHQuY29tIiwiZXhwIjoxNjkzNDM4ODcyfQ.XmFgOtywtZSUxwBPrQM0hRJxAnisXILMpO23c8HqF8I', NULL) RETURNING jwt_token_blocklist.id

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 // material-ui
 import {Grid, Typography} from '@material-ui/core';
@@ -6,20 +6,48 @@ import {Grid, Typography} from '@material-ui/core';
 // project imports
 import MainCard from '../../ui-component/cards/MainCard';
 
+import axios from 'axios';
 //==============================|| SAMPLE PAGE ||==============================//
 
 const SamplePage = () => {
+    const [users, setUsers] = useState([]);
+
+        useEffect(() => {
+            // Fetch all users when component mounts
+            axios.get('/api/users')
+            .then(response => {
+                if(response.data.success) {
+                    setUsers(response.data.users);
+                } else {
+                    console.error("Failed to fetch users");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching users:", error);
+            });
+        }, []);
+
+
     return (
-        <MainCard title="Sample Card">
+        <MainCard title="All Users">
             <Typography variant="body2">
-                Lorem ipsum dolor sit amen, consenter nipissing eli, sed do elusion tempos incident ut laborers et doolie magna alissa. Ut
-                enif ad minim venice, quin nostrum exercitation illampu laborings nisi ut liquid ex ea commons construal. Duos aube grue
-                dolor in reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president,
-                sunk in culpa qui officiate descent molls anim id est labours.
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {users.map(user => (
+                            <tr key={user.email}>  // Assuming each user object has a unique 'id' property
+                                <td>{user.username}</td>
+                                <td>{user.email}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
             </Typography>
-              <Grid item sx={{ mb: 1.25 }}>
-                            <Typography className={classes.subHeading}>Total Earning</Typography>
-                        </Grid>
         </MainCard>
     );
 };
