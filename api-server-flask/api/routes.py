@@ -240,3 +240,15 @@ class GitHubLogin(Resource):
                     "username": user_json['username'],
                     "token": token,
                 }}, 200
+
+    @rest_api.route('/api/users')
+    class GetAllUsers(Resource):
+        """
+           Fetches all registered users
+        """
+
+        @token_required
+        def get(self , current_user):
+            # Assuming the toJSON() method of the User model returns all required data of the user
+            users = [user.toJSON() for user in Users.query.all()]
+            return {"success": True , "users": users} , 200
