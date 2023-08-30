@@ -1,7 +1,7 @@
 import React from 'react';
 
 // material-ui
-import { Typography } from '@material-ui/core';
+import {Grid, Typography} from '@material-ui/core';
 
 // project imports
 import MainCard from '../../ui-component/cards/MainCard';
@@ -17,6 +17,9 @@ const SamplePage = () => {
                 dolor in reprehended in voltage veil esse colum doolie eu fujian bulla parian. Exceptive sin ocean cuspidate non president,
                 sunk in culpa qui officiate descent molls anim id est labours.
             </Typography>
+              <Grid item sx={{ mb: 1.25 }}>
+                            <Typography className={classes.subHeading}>Total Earning</Typography>
+                        </Grid>
         </MainCard>
     );
 };

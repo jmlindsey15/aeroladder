@@ -1,0 +1,24 @@
+2023-08-30 13:13:53.694 CDT [74747] LOG:  starting PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin21.6.0, compiled by Apple clang version 14.0.0 (clang-1400.0.29.202), 64-bit
+2023-08-30 13:13:53.708 CDT [74747] LOG:  could not bind IPv6 address "::1": Address already in use
+2023-08-30 13:13:53.708 CDT [74747] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2023-08-30 13:13:53.708 CDT [74747] LOG:  could not bind IPv4 address "127.0.0.1": Address already in use
+2023-08-30 13:13:53.708 CDT [74747] HINT:  Is another postmaster already running on port 5432? If not, wait a few seconds and retry.
+2023-08-30 13:13:53.708 CDT [74747] WARNING:  could not create listen socket for "localhost"
+2023-08-30 13:13:53.708 CDT [74747] FATAL:  could not create any TCP/IP sockets
+2023-08-30 13:13:53.708 CDT [74747] LOG:  database system is shut down
+2023-08-30 13:20:49.543 CDT [75582] LOG:  starting PostgreSQL 14.9 (Homebrew) on aarch64-apple-darwin21.6.0, compiled by Apple clang version 14.0.0 (clang-1400.0.29.202), 64-bit
+2023-08-30 13:20:49.550 CDT [75582] LOG:  listening on IPv6 address "::1", port 5432
+2023-08-30 13:20:49.550 CDT [75582] LOG:  listening on IPv4 address "127.0.0.1", port 5432
+2023-08-30 13:20:49.551 CDT [75582] LOG:  listening on Unix socket "/tmp/.s.PGSQL.5432"
+2023-08-30 13:20:49.554 CDT [75583] LOG:  database system was shut down at 2023-08-30 13:13:32 CDT
+2023-08-30 13:20:49.557 CDT [75582] LOG:  database system is ready to accept connections
+2023-08-30 13:25:06.538 CDT [75819] FATAL:  database "mitchell" does not exist
+2023-08-30 13:25:14.622 CDT [75825] FATAL:  database "mitchell" does not exist
+2023-08-30 13:25:31.915 CDT [75838] FATAL:  role "postgres" does not exist
+2023-08-30 13:25:41.378 CDT [75845] FATAL:  database "mitchell" does not exist
+2023-08-30 13:48:13.600 CDT [76825] FATAL:  database "mydatabase" does not exist
+2023-08-30 13:48:19.030 CDT [76827] FATAL:  database "mydatabase" does not exist
+2023-08-30 13:49:09.424 CDT [76842] FATAL:  database "mydatabase" does not exist
+2023-08-30 13:49:16.745 CDT [76845] FATAL:  database "mydatabase" does not exist
+2023-08-30 13:50:07.000 CDT [76858] FATAL:  role "postgres" does not exist
+2023-08-30 13:52:14.423 CDT [76909] FATAL:  database "mydatase" does not exist

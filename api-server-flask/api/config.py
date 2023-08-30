@@ -25,14 +25,14 @@ class BaseConfig():
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    DB_ENGINE   = os.getenv('DB_ENGINE'   , None)
-    DB_USERNAME = os.getenv('DB_USERNAME' , None)
-    DB_PASS     = os.getenv('DB_PASS'     , None)
-    DB_HOST     = os.getenv('DB_HOST'     , None)
-    DB_PORT     = os.getenv('DB_PORT'     , None)
-    DB_NAME     = os.getenv('DB_NAME'     , None)
+    DB_ENGINE = os.getenv('DB_ENGINE' , 'postgresql')
+    DB_USERNAME = os.getenv('DB_USERNAME' , 'mitchell')
+    DB_PASS = os.getenv('DB_PASS' , 'password')
+    DB_HOST = os.getenv('DB_HOST' , 'localhost')
+    DB_PORT = os.getenv('DB_PORT' , '5432')
+    DB_NAME = os.getenv('DB_NAME' , 'aeroladder')
 
-    USE_SQLITE  = True 
+    USE_SQLITE  = True
 
     # try to set up a Relational DBMS
     if DB_ENGINE and DB_NAME and DB_USERNAME:
@@ -41,13 +41,15 @@ class BaseConfig():
             
             # Relational DBMS: PSQL, MySql
             SQLALCHEMY_DATABASE_URI = '{}://{}:{}@{}:{}/{}'.format(
-                DB_ENGINE,
-                DB_USERNAME,
-                DB_PASS,
-                DB_HOST,
-                DB_PORT,
+                DB_ENGINE ,
+                DB_USERNAME ,
+                DB_PASS ,
+                DB_HOST ,
+                DB_PORT ,
                 DB_NAME
-            ) 
+            )
+            print("SQLALCHEMY_DATABASE_URI:", SQLALCHEMY_DATABASE_URI)
+
 
             USE_SQLITE  = False
 

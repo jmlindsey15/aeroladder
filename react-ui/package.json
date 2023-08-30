@@ -6,7 +6,7 @@
     "build": {
         "yarn": "v14.0.0,v16.0.0",
         "npm": "v14.0.0,v16.0.0"
-    },    
+    },
     "dependencies": {
         "@emotion/react": "^11.4.0",
         "@emotion/styled": "^11.3.0",
@@ -34,7 +34,7 @@
         "react-redux": "^7.2.3",
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "^4.0.3",
+        "react-scripts": "^5.0.1",
         "redux": "^4.0.5",
         "redux-persist": "^6.0.0",
         "yup": "^0.32.9"
