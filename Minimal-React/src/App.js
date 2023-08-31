@@ -4,6 +4,7 @@ import 'simplebar-react/dist/simplebar.min.css';
 // image
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
+
 // ----------------------------------------------------------------------
 
 // routes

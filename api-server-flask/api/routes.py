@@ -10,6 +10,7 @@ from flask_restx import Api , Resource , fields
 from .models import db , Users , JWTTokenBlocklist
 from .config import BaseConfig
 import requests
+from datetime import datetime
 from sqlalchemy.exc import InvalidRequestError
 from werkzeug.exceptions import BadRequest
 
@@ -264,32 +265,50 @@ class GitHubLogin(Resource):
                     "token": token ,
                 }} , 200
 
+    from flask import jsonify
+
+    from datetime import datetime
+
     @rest_api.route('/api/table/<string:table_name>')
     class GetTableData(Resource):
-        """
-        Fetches all records from the specified table.
-        """
 
         def get(self , table_name):
-            # Convert table name to CamelCase to match model name.
-            # E.g. "user_roles" becomes "UserRoles"
-            class_name = ''.join(word.capitalize() for word in table_name.split('_'))
-
-            # Fetch the table class from the globals
+            class_name = self.table_to_class_name(table_name)
             table_class = globals().get(class_name)
 
             if not table_class:
                 return {"success": False , "msg": "Table not found"} , 404
 
+            all_columns = [column.name for column in table_class.__table__.columns]
+
             try:
-                # Fetch all records from the specified table
-                records = [record.toJSON() for record in table_class.query.all()]
+                records_raw = table_class.query.all()
+
+                records = []
+                for record in records_raw:
+                    # Convert the record to a dictionary
+                    record_data = self.serialize_record(record)
+
+                    # Ensure every column is present
+                    for col in all_columns:
+                        record_data.setdefault(col , None)
+                    records.append(record_data)
+
                 return {"success": True , "data": records} , 200
-            except InvalidRequestError:
-                # Handle case where the table does not exist or the query is invalid
-                return {"success": False , "msg": "Invalid table or query"} , 400
-            except AttributeError:
-                # Handle case where the table class doesn't have a toJSON() method
-                return {"success": False , "msg": "Table data serialization error"} , 500
 
+            except Exception as e:
+                return {"success": False , "msg": str(e)} , 500
 
+        def serialize_record(self , record):
+            """Serializes a record to a dictionary, handling special types."""
+            data = {}
+            for key , value in record.__dict__.items():
+                if key != "_sa_instance_state":
+                    if isinstance(value , datetime):
+                        data[key] = value.strftime('%Y-%m-%d %H:%M:%S')
+                    else:
+                        data[key] = value
+            return data
+
+        def table_to_class_name(self , table_name):
+            return ''.join(word.capitalize() for word in table_name.split('_'))

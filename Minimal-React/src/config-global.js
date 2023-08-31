@@ -1,9 +1,14 @@
 // routes
 import { paths } from 'src/routes/paths';
 
+let BACKEND_SERVER = null;
+if (process.env.REACT_APP_BACKEND_SERVER) {
+  BACKEND_SERVER = process.env.REACT_APP_BACKEND_SERVER;
+} else {
+  BACKEND_SERVER = "http://localhost:5000";
+}
+export const API_SERVER = BACKEND_SERVER;
 // API
-// ----------------------------------------------------------------------
-
 export const HOST_API = process.env.REACT_APP_HOST_API;
 export const ASSETS_API = process.env.REACT_APP_ASSETS_API;
 

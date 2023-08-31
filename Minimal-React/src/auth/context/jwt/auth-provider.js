@@ -122,8 +122,9 @@ export function AuthProvider({ children }) {
   }, []);
 
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
+  const register = useCallback(async (username, email, password, firstName, lastName) => {
     const data = {
+      username,
       email,
       password,
       firstName,

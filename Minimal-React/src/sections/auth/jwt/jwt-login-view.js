@@ -23,6 +23,7 @@ import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -60,17 +61,30 @@ export default function JwtLoginView() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      await login?.(data.email, data.password);
+const onSubmit = handleSubmit(async (data) => {
+  try {
+    const response = await axios.post('/api/users/login', {
+      email: data.email,
+      password: data.password
+    });
 
+    if (response.data.success) {
+      // Store token or handle successful login
+      // For example, you might want to save the token in local storage
+      localStorage.setItem('token', response.data.token);
+
+      await login?.(data.email, data.password);
       router.push(returnTo || PATH_AFTER_LOGIN);
-    } catch (error) {
-      console.error(error);
-      reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+    } else {
+      // Handle the error message from the server
+      setErrorMsg(response.data.msg);
     }
-  });
+  } catch (error) {
+    console.error(error);
+    reset();
+    setErrorMsg(typeof error === 'string' ? error : error.message || "Unknown error occurred.");
+  }
+});
 
   const renderHead = (
     <Stack spacing={2} sx={{ mb: 5 }}>
