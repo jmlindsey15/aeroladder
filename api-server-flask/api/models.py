@@ -16,10 +16,24 @@ db = SQLAlchemy()
 class Users(db.Model):
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(32), nullable=False)
+    firstName = db.Column(db.String(64) , nullable=True)
+    lastName = db.Column(db.String(64) , nullable=True)
     email = db.Column(db.String(64), nullable=True)
     password = db.Column(db.Text())
     jwt_auth_active = db.Column(db.Boolean())
     date_joined = db.Column(db.DateTime(), default=datetime.utcnow)
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "firstName": self.firstName,
+            "lastName": self.lastName,
+            "email": self.email,
+            "password": self.password,
+            "jwt_auth_active": self.jwt_auth_active,
+            "date_joined": self.date_joined
+        }
 
     def __repr__(self):
         return f"User {self.username}"

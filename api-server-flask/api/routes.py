@@ -10,13 +10,18 @@ from flask_restx import Api , Resource , fields
 from .models import db , Users , JWTTokenBlocklist
 from .config import BaseConfig
 import requests
+from sqlalchemy.exc import InvalidRequestError
+from werkzeug.exceptions import BadRequest
+
 
 rest_api = Api(version="1.0" , title="Users API")
 
 signup_model = rest_api.model('SignUpModel' , {
     "username": fields.String(required=True , min_length=2 , max_length=32) ,
     "email": fields.String(required=True , min_length=4 , max_length=64) ,
-    "password": fields.String(required=True , min_length=4 , max_length=16)
+    "password": fields.String(required=True , min_length=4 , max_length=16),
+    "firstName": fields.String(required=True , min_length=2 , max_length=32) ,
+    "lastName": fields.String(required=True , min_length=2 , max_length=32)
 })
 
 login_model = rest_api.model('LoginModel' , {
@@ -83,27 +88,29 @@ class Register(Resource):
 
     @rest_api.expect(signup_model , validate=True)
     def post(self):
+        print(request.get_json())
         req_data = request.get_json()
 
         _username = req_data.get("username")
         _email = req_data.get("email")
         _password = req_data.get("password")
+        _firstName = req_data.get("firstName")
+        _lastName = req_data.get("lastName")
 
         user_exists = Users.get_by_email(_email)
         if user_exists:
             return {"success": False ,
                     "msg": "Email already taken"} , 400
 
-        new_user = Users(username=_username , email=_email)
-
+        new_user = Users(username=_username , email=_email, firstName=_firstName, lastName=_lastName)
+        print(Users)
         new_user.set_password(_password)
         new_user.save()
 
-        return {"success": True ,
-                "userID": new_user.id ,
-                "msg": "The user was successfully registered"} , 200
-
-
+        return {"success": True,
+                "userID": new_user.id,
+                "msg": "The user was successfully registered"}, 200
+        print("User registered successfully")
 @rest_api.route('/api/users/login')
 class Login(Resource):
     """
@@ -257,13 +264,32 @@ class GitHubLogin(Resource):
                     "token": token ,
                 }} , 200
 
-    @rest_api.route('/api/users')
-    class GetAllUsers(Resource):
+    @rest_api.route('/api/table/<string:table_name>')
+    class GetTableData(Resource):
         """
-           Fetches all registered users
+        Fetches all records from the specified table.
         """
 
-        def get(self):
-            # Assuming the toJSON() method of the User model returns all required data of the user
-            users = [user.toJSON() for user in Users.query.all()]
-            return {"success": True , "users": users} , 200
+        def get(self , table_name):
+            # Convert table name to CamelCase to match model name.
+            # E.g. "user_roles" becomes "UserRoles"
+            class_name = ''.join(word.capitalize() for word in table_name.split('_'))
+
+            # Fetch the table class from the globals
+            table_class = globals().get(class_name)
+
+            if not table_class:
+                return {"success": False , "msg": "Table not found"} , 404
+
+            try:
+                # Fetch all records from the specified table
+                records = [record.toJSON() for record in table_class.query.all()]
+                return {"success": True , "data": records} , 200
+            except InvalidRequestError:
+                # Handle case where the table does not exist or the query is invalid
+                return {"success": False , "msg": "Invalid table or query"} , 400
+            except AttributeError:
+                # Handle case where the table class doesn't have a toJSON() method
+                return {"success": False , "msg": "Table data serialization error"} , 500
+
+
