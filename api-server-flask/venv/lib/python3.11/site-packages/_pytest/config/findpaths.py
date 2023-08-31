@@ -1,4 +1,5 @@
 import os
+import sys
 from pathlib import Path
 from typing import Dict
 from typing import Iterable
@@ -64,12 +65,15 @@ def load_config_dict_from_file(
 
     # '.toml' files are considered if they contain a [tool.pytest.ini_options] table.
     elif filepath.suffix == ".toml":
-        import tomli
+        if sys.version_info >= (3, 11):
+            import tomllib
+        else:
+            import tomli as tomllib
 
         toml_text = filepath.read_text(encoding="utf-8")
         try:
-            config = tomli.loads(toml_text)
-        except tomli.TOMLDecodeError as exc:
+            config = tomllib.loads(toml_text)
+        except tomllib.TOMLDecodeError as exc:
             raise UsageError(f"{filepath}: {exc}") from exc
 
         result = config.get("tool", {}).get("pytest", {}).get("ini_options", None)
@@ -92,6 +96,7 @@ def locate_config(
     and return a tuple of (rootdir, inifile, cfg-dict)."""
     config_names = [
         "pytest.ini",
+        ".pytest.ini",
         "pyproject.toml",
         "tox.ini",
         "setup.cfg",
@@ -198,8 +203,7 @@ def determine_setup(
                     else:
                         cwd = Path.cwd()
                     rootdir = get_common_ancestor([cwd, ancestor])
-                    is_fs_root = os.path.splitdrive(str(rootdir))[1] == "/"
-                    if is_fs_root:
+                    if is_fs_root(rootdir):
                         rootdir = ancestor
     if rootdir_cmd_arg:
         rootdir = absolutepath(os.path.expandvars(rootdir_cmd_arg))
@@ -211,3 +215,11 @@ def determine_setup(
             )
     assert rootdir is not None
     return rootdir, inipath, inicfg or {}
+
+
+def is_fs_root(p: Path) -> bool:
+    r"""
+    Return True if the given path is pointing to the root of the
+    file system ("/" on Unix and "C:\\" on Windows for example).
+    """
+    return os.path.splitdrive(str(p))[1] == os.sep

@@ -3,72 +3,72 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 import jwt
-from datetime import datetime, timedelta
+from datetime import datetime , timedelta
 from functools import wraps
 from flask import request
-from flask_restx import Api, Resource, fields
-from .models import db, Users, JWTTokenBlocklist
+from flask_restx import Api , Resource , fields
+from .models import db , Users , JWTTokenBlocklist
 from .config import BaseConfig
 import requests
 
+rest_api = Api(version="1.0" , title="Users API")
 
-rest_api = Api(version="1.0", title="Users API")
-
-signup_model = rest_api.model('SignUpModel', {
-    "username": fields.String(required=True, min_length=2, max_length=32),
-    "email": fields.String(required=True, min_length=4, max_length=64),
-    "password": fields.String(required=True, min_length=4, max_length=16)
+signup_model = rest_api.model('SignUpModel' , {
+    "username": fields.String(required=True , min_length=2 , max_length=32) ,
+    "email": fields.String(required=True , min_length=4 , max_length=64) ,
+    "password": fields.String(required=True , min_length=4 , max_length=16)
 })
 
-login_model = rest_api.model('LoginModel', {
-    "email": fields.String(required=True, min_length=4, max_length=64),
-    "password": fields.String(required=True, min_length=4, max_length=16)
+login_model = rest_api.model('LoginModel' , {
+    "email": fields.String(required=True , min_length=4 , max_length=64) ,
+    "password": fields.String(required=True , min_length=4 , max_length=16)
 })
 
-user_edit_model = rest_api.model('UserEditModel', {
-    "userID": fields.String(required=True, min_length=1, max_length=32),
-    "username": fields.String(required=True, min_length=2, max_length=32),
-    "email": fields.String(required=True, min_length=4, max_length=64)
+user_edit_model = rest_api.model('UserEditModel' , {
+    "userID": fields.String(required=True , min_length=1 , max_length=32) ,
+    "username": fields.String(required=True , min_length=2 , max_length=32) ,
+    "email": fields.String(required=True , min_length=4 , max_length=64)
 })
-
 
 """
    Helper function for JWT token required
 """
 
+
 def token_required(f):
     @wraps(f)
-    def decorator(*args, **kwargs):
+    def decorator(*args , **kwargs):
         # Check for token in headers
         token = request.headers.get("authorization")
 
         if not token:
-            return {"success": False, "msg": "Valid JWT token is missing"}, 400
+            return {"success": False , "msg": "Valid JWT token is missing"} , 400
 
         try:
-            data = jwt.decode(token, BaseConfig.SECRET_KEY, algorithms=["HS256"])
+            data = jwt.decode(token , BaseConfig.SECRET_KEY , algorithms=["HS256"])
             if not data.get("email"):
-                return {"success": False, "msg": "Invalid JWT token. Missing data"}, 400
+                return {"success": False , "msg": "Invalid JWT token. Missing data"} , 400
 
             current_user = Users.get_by_email(data["email"])
             if not current_user:
-                return {"success": False, "msg": "User does not exist. Wrong auth token."}, 400
+                return {"success": False , "msg": "User does not exist. Wrong auth token."} , 400
 
             token_expired = db.session.query(JWTTokenBlocklist.id).filter_by(jwt_token=token).scalar()
             if token_expired:
-                return {"success": False, "msg": "Token revoked."}, 400
+                return {"success": False , "msg": "Token revoked."} , 400
 
             if not current_user.check_jwt_auth_active():
-                return {"success": False, "msg": "Token expired."}, 400
+                return {"success": False , "msg": "Token expired."} , 400
 
         except jwt.ExpiredSignatureError:
-            return {"success": False, "msg": "Token has expired"}, 400
+            return {"success": False , "msg": "Token has expired"} , 400
         except jwt.InvalidTokenError:
-            return {"success": False, "msg": "Invalid token"}, 400
+            return {"success": False , "msg": "Invalid token"} , 400
 
-        return f(current_user, *args, **kwargs)
+        return f(current_user , *args , **kwargs)
 
     return decorator
+
 
 """
     Flask-Restx routes
@@ -81,9 +81,8 @@ class Register(Resource):
        Creates a new user by taking 'signup_model' input
     """
 
-    @rest_api.expect(signup_model, validate=True)
+    @rest_api.expect(signup_model , validate=True)
     def post(self):
-
         req_data = request.get_json()
 
         _username = req_data.get("username")
@@ -92,17 +91,17 @@ class Register(Resource):
 
         user_exists = Users.get_by_email(_email)
         if user_exists:
-            return {"success": False,
-                    "msg": "Email already taken"}, 400
+            return {"success": False ,
+                    "msg": "Email already taken"} , 400
 
-        new_user = Users(username=_username, email=_email)
+        new_user = Users(username=_username , email=_email)
 
         new_user.set_password(_password)
         new_user.save()
 
-        return {"success": True,
-                "userID": new_user.id,
-                "msg": "The user was successfully registered"}, 200
+        return {"success": True ,
+                "userID": new_user.id ,
+                "msg": "The user was successfully registered"} , 200
 
 
 @rest_api.route('/api/users/login')
@@ -150,9 +149,9 @@ class Login(Resource):
 
             token = (
                 jwt.encode(
-                {'email': _email ,
-                        'exp': datetime.utcnow() + timedelta(minutes=30)} ,
-                               BaseConfig.SECRET_KEY))
+                    {'email': _email ,
+                     'exp': datetime.utcnow() + timedelta(minutes=30)} ,
+                    BaseConfig.SECRET_KEY))
             print("Generated token:" , token)
 
             # Debug: Display the generated token
@@ -169,15 +168,16 @@ class Login(Resource):
         user_exists.set_jwt_auth_active(True)
         user_exists.save()
 
-        return {"success": True,
-                "token": token,
-                "user": user_exists.toJSON()}, 200
+        return {"success": True ,
+                "token": token ,
+                "user": user_exists.toJSON()} , 200
+
 
 @rest_api.route('/api/users/edit')
 class EditUser(Resource):
     @rest_api.expect(user_edit_model)
     @token_required
-    def post(self, current_user):
+    def post(self , current_user):
         req_data = request.get_json()
         _new_username = req_data.get("username")
         _new_email = req_data.get("email")
@@ -190,7 +190,7 @@ class EditUser(Resource):
 
         db.session.commit()  # Saving the changes
 
-        return {"success": True}, 200
+        return {"success": True} , 200
 
 
 @rest_api.route('/api/users/logout')
@@ -218,43 +218,44 @@ class GitHubLogin(Resource):
         client_secret = BaseConfig.GITHUB_CLIENT_SECRET
         root_url = 'https://github.com/login/oauth/access_token'
 
-        params = { 'client_id': client_id, 'client_secret': client_secret, 'code': code }
+        params = {'client_id': client_id , 'client_secret': client_secret , 'code': code}
 
-        data = requests.post(root_url, params=params, headers={
-            'Content-Type': 'application/x-www-form-urlencoded',
+        data = requests.post(root_url , params=params , headers={
+            'Content-Type': 'application/x-www-form-urlencoded' ,
         })
 
         response = data._content.decode('utf-8')
         access_token = response.split('&')[0].split('=')[1]
 
-        user_data = requests.get('https://api.github.com/user', headers={
+        user_data = requests.get('https://api.github.com/user' , headers={
             "Authorization": "Bearer " + access_token
         }).json()
-        
+
         user_exists = Users.get_by_username(user_data['login'])
         if user_exists:
             user = user_exists
         else:
             try:
-                user = Users(username=user_data['login'], email=user_data['email'])
+                user = Users(username=user_data['login'] , email=user_data['email'])
                 user.save()
             except:
                 user = Users(username=user_data['login'])
                 user.save()
-        
+
         user_json = user.toJSON()
 
-        token = jwt.encode({"username": user_json['username'], 'exp': datetime.utcnow() + timedelta(minutes=30)}, BaseConfig.SECRET_KEY)
+        token = jwt.encode({"username": user_json['username'] , 'exp': datetime.utcnow() + timedelta(minutes=30)} ,
+                           BaseConfig.SECRET_KEY)
         user.set_jwt_auth_active(True)
         user.save()
 
-        return {"success": True,
+        return {"success": True ,
                 "user": {
-                    "_id": user_json['_id'],
-                    "email": user_json['email'],
-                    "username": user_json['username'],
-                    "token": token,
-                }}, 200
+                    "_id": user_json['_id'] ,
+                    "email": user_json['email'] ,
+                    "username": user_json['username'] ,
+                    "token": token ,
+                }} , 200
 
     @rest_api.route('/api/users')
     class GetAllUsers(Resource):
