@@ -5,7 +5,7 @@ import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 // components
 import { useSettingsContext } from 'src/components/settings';
-import CustomTable from '/Users/mitchell/Repos/aeroladder/Minimal-React/src/jmltempates/blankTable.js';
+import GenericTable from '/Users/mitchell/Repos/aeroladder/Minimal-React/src/jmltempates/GenericTable.js';
 import SimpleLayout from '/Users/mitchell/Repos/aeroladder/Minimal-React/src/layouts/simple';
 // ----------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ export default function OneView() {
                 flexDirection: 'column',
             }}
         >
-            <CustomTable tableName={tableName} /> {/* Passing the table name to CustomTable */}
+            <GenericTable tableName={tableName} /> {/* Passing the table name to CustomTable */}
         </Box>
       </Container>
     </SimpleLayout>

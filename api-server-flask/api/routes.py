@@ -312,3 +312,31 @@ class GitHubLogin(Resource):
 
         def table_to_class_name(self , table_name):
             return ''.join(word.capitalize() for word in table_name.split('_'))
+
+def table_to_class_name(table_name):
+    return ''.join(word.capitalize() for word in table_name.split('_'))
+
+@rest_api.route('/api/table/<string:table_name>/<int:record_id>', methods=['DELETE'])
+class GetTableData(Resource):
+    def delete(self, table_name, record_id):
+        # Use the standalone function
+        class_name = table_to_class_name(table_name)
+        table_class = globals().get(class_name)
+
+        if not table_class:
+            return {"success": False, "msg": "Table not found"}, 404
+
+        try:
+            record_to_delete = table_class.query.get(record_id)
+
+            if not record_to_delete:
+                return {"success": False, "msg": "Record not found"}, 404
+
+            db.session.delete(record_to_delete)
+            db.session.commit()
+
+            return {"success": True, "msg": "Record deleted successfully"}, 200
+
+        except Exception as e:
+            db.session.rollback()  # It's good practice to rollback the session in case of errors
+            return {"success": False, "msg": str(e)}, 500
