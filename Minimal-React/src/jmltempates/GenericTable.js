@@ -10,7 +10,11 @@ import {
   Paper,
   TablePagination,
   Button,
-  TextField
+  TextField,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions
 } from '@mui/material';
 
 function GenericTable({ tableName }) {
@@ -20,8 +24,10 @@ function GenericTable({ tableName }) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortDirection, setSortDirection] = useState("asc"); // or "desc"
+  const [sortDirection, setSortDirection] = useState("asc");
   const [sortColumn, setSortColumn] = useState(null);
+  const [isEditOpen, setIsEditOpen] = useState(false);
+  const [currentRowData, setCurrentRowData] = useState(null);
 
   useEffect(() => {
     axios.get(`/api/table/${tableName}`)
@@ -40,6 +46,7 @@ function GenericTable({ tableName }) {
   }, [tableName]);
 
   const handleChangePage = (event, newPage) => setPage(newPage);
+
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
@@ -57,31 +64,41 @@ function GenericTable({ tableName }) {
     setSortColumn(column);
   };
 
-const handleDeleteRow = (index) => {
-    const recordId = data[index].id;  // Assuming your rows have an id field
-
+  const handleDeleteRow = (index) => {
+    const recordId = data[index].id;
     axios.delete(`/api/table/${tableName}/${recordId}`)
         .then(response => {
             if (response.data.success) {
                 const newData = [...data];
                 newData.splice(index, 1);
                 setData(newData);
-                // Optionally show a success message if required
             } else {
-                // Handle the failure scenario
                 console.error("Error deleting the record:", response.data.msg);
             }
         })
         .catch(error => {
-            // Handle any errors from the request itself (like network issues)
             console.error("Network error or unhandled server error:", error.message);
         });
-};
+  };
 
-const filteredData = searchTerm
+  const handleEditRow = (rowData) => {
+    setCurrentRowData(rowData);
+    setIsEditOpen(true);
+  };
+
+  const handleSuccessfulEdit = (updatedData) => {
+    const updatedRowIndex = data.findIndex(row => row.id === updatedData.id);
+    if (updatedRowIndex > -1) {
+      const updatedDataSet = [...data];
+      updatedDataSet[updatedRowIndex] = updatedData;
+      setData(updatedDataSet);
+    }
+    setIsEditOpen(false);
+  };
+
+  const filteredData = searchTerm
     ? data.filter(row => Object.values(row).some(val => (val ? val.toString().toLowerCase().includes(searchTerm.toLowerCase()) : false)))
     : data;
-
 
   const allColumns = [...new Set(data.flatMap(Object.keys))];
 
@@ -115,7 +132,7 @@ const filteredData = searchTerm
                 ))}
                 <TableCell>
                   <Button onClick={() => handleDeleteRow(rowIndex)}>Delete</Button>
-                  <Button>Edit</Button>
+                  <Button onClick={() => handleEditRow(row)}>Edit</Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -131,6 +148,38 @@ const filteredData = searchTerm
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </TableContainer>
+
+      {/* Quick Edit Dialog */}
+      <Dialog open={isEditOpen} onClose={() => setIsEditOpen(false)}>
+        <DialogTitle>Edit Row</DialogTitle>
+        <DialogContent>
+          {allColumns.map(col => (
+            <TextField
+              key={col}
+              label={col}
+              defaultValue={currentRowData && currentRowData[col]}
+              fullWidth
+              margin="normal"
+              onChange={e => {
+                const newValue = e.target.value;
+                setCurrentRowData(prev => ({ ...prev, [col]: newValue }));
+              }}
+            />
+          ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsEditOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              handleSuccessfulEdit(currentRowData); // Add an actual save mechanism here
+            }}
+            color="primary">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
