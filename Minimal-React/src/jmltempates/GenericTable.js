@@ -86,15 +86,26 @@ function GenericTable({ tableName }) {
     setIsEditOpen(true);
   };
 
-  const handleSuccessfulEdit = (updatedData) => {
-    const updatedRowIndex = data.findIndex(row => row.id === updatedData.id);
-    if (updatedRowIndex > -1) {
-      const updatedDataSet = [...data];
-      updatedDataSet[updatedRowIndex] = updatedData;
-      setData(updatedDataSet);
-    }
-    setIsEditOpen(false);
-  };
+const handleSuccessfulEdit = (updatedData) => {
+    axios.put(`/api/table/${tableName}/${updatedData.id}`, updatedData)
+        .then(response => {
+            if (response.data.success) {
+                const updatedRowIndex = data.findIndex(row => row.id === updatedData.id);
+                if (updatedRowIndex > -1) {
+                    const updatedDataSet = [...data];
+                    updatedDataSet[updatedRowIndex] = updatedData;
+                    setData(updatedDataSet);
+                }
+                setIsEditOpen(false);
+            } else {
+                console.error("Error updating the record:", response.data.msg);
+            }
+        })
+        .catch(error => {
+            console.error("Network error or unhandled server error:", error.message);
+        });
+};
+
 
   const filteredData = searchTerm
     ? data.filter(row => Object.values(row).some(val => (val ? val.toString().toLowerCase().includes(searchTerm.toLowerCase()) : false)))

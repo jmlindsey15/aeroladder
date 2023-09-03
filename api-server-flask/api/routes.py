@@ -3,6 +3,7 @@
 Copyright (c) 2019 - present AppSeed.us
 """
 import jwt
+from flask_restful import reqparse
 from datetime import datetime , timedelta
 from functools import wraps
 from flask import request
@@ -316,9 +317,11 @@ class GitHubLogin(Resource):
 def table_to_class_name(table_name):
     return ''.join(word.capitalize() for word in table_name.split('_'))
 
-@rest_api.route('/api/table/<string:table_name>/<int:record_id>', methods=['DELETE'])
-class GetTableData(Resource):
-    def delete(self, table_name, record_id):
+
+
+@rest_api.route('/api/table/<string:table_name>/<int:record_id>', methods=['PUT'])
+class UpdateTableData(Resource):
+    def put(self, table_name, record_id):
         # Use the standalone function
         class_name = table_to_class_name(table_name)
         table_class = globals().get(class_name)
@@ -327,15 +330,104 @@ class GetTableData(Resource):
             return {"success": False, "msg": "Table not found"}, 404
 
         try:
-            record_to_delete = table_class.query.get(record_id)
+            record_to_edit = table_class.query.get(record_id)
 
-            if not record_to_delete:
+            if not record_to_edit:
                 return {"success": False, "msg": "Record not found"}, 404
 
-            db.session.delete(record_to_delete)
+            # Assuming JSON data is sent with the PUT request
+            updates = request.json
+
+            for key, value in updates.items():
+                if hasattr(record_to_edit, key):  # Check if the record has the given attribute/column
+                    setattr(record_to_edit, key, value)
+
             db.session.commit()
 
-            return {"success": True, "msg": "Record deleted successfully"}, 200
+            return {"success": True, "msg": "Record updated successfully"}, 200
+
+        except Exception as e:
+            db.session.rollback()  # It's good practice to rollback the session in case of errors
+            return {"success": False, "msg": str(e)}, 500
+
+
+# quick edit route
+@rest_api.route('/api/table/<string:table_name>/<int:record_id>', methods=['PUT'])
+class UpdateTableData(Resource):
+    def put(self, table_name, record_id):
+        # Use the standalone function
+        class_name = table_to_class_name(table_name)
+        table_class = globals().get(class_name)
+
+        if not table_class:
+            return {"success": False, "msg": "Table not found"}, 404
+
+        # Use reqparse to handle data validation and parsing
+        parser = reqparse.RequestParser()
+
+        # Dynamically add all fields of the model to the parser
+        # This assumes all fields in the model are String types
+        # Modify this according to your schema if required
+        for column in table_class.__table__.columns:
+            parser.add_argument(column.name, type=str, location='json')
+
+        args = parser.parse_args()
+
+        try:
+            record_to_update = table_class.query.get(record_id)
+
+            if not record_to_update:
+                return {"success": False, "msg": "Record not found"}, 404
+
+            # Update each attribute of the record
+            for key, value in args.items():
+                if value is not None:  # Check to prevent overwriting with None
+                    setattr(record_to_update, key, value)
+
+            db.session.commit()
+
+            return {"success": True, "msg": "Record updated successfully", "data": args}, 200
+
+        except Exception as e:
+            db.session.rollback()  # It's good practice to rollback the session in case of errors
+            return {"success": False, "msg": str(e)}, 500
+
+###### edit a table value from a quick edit view
+@rest_api.route('/api/table/<string:table_name>/<int:record_id>', methods=['PUT'])
+class UpdateTableData(Resource):
+    def put(self, table_name, record_id):
+        # Use the standalone function
+        class_name = table_to_class_name(table_name)
+        table_class = globals().get(class_name)
+
+        if not table_class:
+            return {"success": False, "msg": "Table not found"}, 404
+
+        # Use reqparse to handle data validation and parsing
+        parser = reqparse.RequestParser()
+
+        # Dynamically add all fields of the model to the parser
+        # This assumes all fields in the model are String types
+        # Modify this according to your schema if required
+        for column in table_class.__table__.columns:
+            parser.add_argument(column.name, type=str, location='json')
+
+        args = parser.parse_args()
+
+        try:
+            record_to_update = table_class.query.get(record_id)
+
+            if not record_to_update:
+                return {"success": False, "msg": "Record not found"}, 404
+
+            # Update each attribute of the record
+            for key, value in args.items():
+                if value is not None:  # Check to prevent overwriting with None
+                    setattr(record_to_update, key, value)
+
+            db.session.commit()
+
+            return {"success": True, "msg": "Record updated successfully", "data": args}, 200
 
         except Exception as e:
             db.session.rollback()  # It's good practice to rollback the session in case of errors
