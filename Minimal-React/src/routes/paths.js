@@ -25,7 +25,7 @@ export const paths = {
     user: `${ROOTS.DASHBOARD}/user`,
     group: {
       root: `${ROOTS.DASHBOARD}/group`,
-      four: `${ROOTS.DASHBOARD}/group/four`,
+      users: `${ROOTS.DASHBOARD}/group/users`,
       five: `${ROOTS.DASHBOARD}/group/five`,
       six: `${ROOTS.DASHBOARD}/group/six`,
     },
