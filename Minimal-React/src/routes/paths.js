@@ -22,6 +22,10 @@ export const paths = {
     hub: `${ROOTS.DASHBOARD}/hub`,
     flightplan: `${ROOTS.DASHBOARD}/flightplan`,
     mycareer: `${ROOTS.DASHBOARD}/mycareer`,
+    flights: `${ROOTS.DASHBOARD}/flights`,
+    routes: `${ROOTS.DASHBOARD}/routes`,
+    careerpath: `${ROOTS.DASHBOARD}/careerpath`,
+    userachievements: `${ROOTS.DASHBOARD}/userachievements`,
     user: `${ROOTS.DASHBOARD}/user`,
     admin: {
       root: `${ROOTS.DASHBOARD}/admin`,

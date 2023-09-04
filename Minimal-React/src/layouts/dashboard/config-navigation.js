@@ -53,11 +53,13 @@ export function useNavData() {
         items: [
           { title: 'hub', path: paths.dashboard.hub, icon: ICONS.dashboard },
           { title: 'flight plan', path: paths.dashboard.flightplan, icon: ICONS.ecommerce },
-          {
-            title: 'my career',
-            path: paths.dashboard.mycareer,
-            icon: ICONS.analytics,
-          },
+          {title: 'my career', path: paths.dashboard.mycareer, icon: ICONS.analytics,},
+          { title: 'flights', path: paths.dashboard.flights, icon: ICONS.dashboard },
+            { title: 'routes', path: paths.dashboard.routes, icon: ICONS.ecommerce },
+            {title: 'career path', path: paths.dashboard.careerpath, icon: ICONS.analytics,},
+            { title: 'user achievements', path: paths.dashboard.userachievements, icon: ICONS.dashboard },
+
+
         ],
       },
 
