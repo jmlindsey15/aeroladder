@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import TwoView from 'src/sections/two/view';
+import FlightPlanView from 'src/sections/flightplan/view';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ export default function Page() {
         <title> Dashboard: Two</title>
       </Helmet>
 
-      <TwoView />
+      <FlightPlanView />
     </>
   );
 }

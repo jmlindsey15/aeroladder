@@ -8,7 +8,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 
-export default function ThreeView() {
+export default function MyCareerView() {
   const settings = useSettingsContext();
 
   return (

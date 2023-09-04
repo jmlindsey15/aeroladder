@@ -8,7 +8,7 @@ import { useSettingsContext } from 'src/components/settings';
 
 // ----------------------------------------------------------------------
 
-export default function TwoView() {
+export default function FlightPlanView() {
   const settings = useSettingsContext();
 
   return (

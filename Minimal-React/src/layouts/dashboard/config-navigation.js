@@ -52,10 +52,10 @@ export function useNavData() {
         subheader: 'Skyward',
         items: [
           { title: 'hub', path: paths.dashboard.hub, icon: ICONS.dashboard },
-          { title: 'two', path: paths.dashboard.two, icon: ICONS.ecommerce },
+          { title: 'flight plan', path: paths.dashboard.flightplan, icon: ICONS.ecommerce },
           {
-            title: 'three',
-            path: paths.dashboard.three,
+            title: 'my career',
+            path: paths.dashboard.mycareer,
             icon: ICONS.analytics,
           },
         ],

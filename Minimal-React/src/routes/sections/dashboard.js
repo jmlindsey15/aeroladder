@@ -10,8 +10,8 @@ import { LoadingScreen } from 'src/components/loading-screen';
 // ----------------------------------------------------------------------
 
 const HubView = lazy(() => import('src/pages/dashboard/hub'));
-const PageTwo = lazy(() => import('src/pages/dashboard/two'));
-const PageThree = lazy(() => import('src/pages/dashboard/three'));
+const FlightPlanView = lazy(() => import('src/pages/dashboard/flightplan'));
+const MyCareerView = lazy(() => import('src/pages/dashboard/mycareer'));
 const UsersView = lazy(() => import('src/pages/dashboard/users'));
 const PageFive = lazy(() => import('src/pages/dashboard/five'));
 const PageSix = lazy(() => import('src/pages/dashboard/six'));
@@ -33,8 +33,8 @@ export const dashboardRoutes = [
     children: [
       { element: <HubView />, index: true },
       { path: 'hub', element: <HubView /> },
-      { path: 'two', element: <PageTwo /> },
-      { path: 'three', element: <PageThree /> },
+      { path: 'flightplan', element: <FlightPlanView /> },
+      { path: 'mycareer', element: <MyCareerView /> },
       {
         path: 'admin',
         children: [
