@@ -49,9 +49,9 @@ export function useNavData() {
       // OVERVIEW
       // ----------------------------------------------------------------------
       {
-        subheader: 'overview v5.5.0',
+        subheader: 'Skyward',
         items: [
-          { title: 'one', path: paths.dashboard.root, icon: ICONS.dashboard },
+          { title: 'hub', path: paths.dashboard.hub, icon: ICONS.dashboard },
           { title: 'two', path: paths.dashboard.two, icon: ICONS.ecommerce },
           {
             title: 'three',
@@ -68,12 +68,12 @@ export function useNavData() {
         items: [
           {
             title: 'admin',
-            path: paths.dashboard.group.root,
+            path: paths.dashboard.admin.root,
             icon: ICONS.user,
             children: [
-              { title: 'users', path: paths.dashboard.group.root },
-              { title: 'five', path: paths.dashboard.group.five },
-              { title: 'six', path: paths.dashboard.group.six },
+              { title: 'users', path: paths.dashboard.admin.root },
+              { title: 'five', path: paths.dashboard.admin.five },
+              { title: 'six', path: paths.dashboard.admin.six },
             ],
           },
         ],

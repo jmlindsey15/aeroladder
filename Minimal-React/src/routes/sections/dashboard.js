@@ -9,7 +9,7 @@ import { LoadingScreen } from 'src/components/loading-screen';
 
 // ----------------------------------------------------------------------
 
-const IndexPage = lazy(() => import('src/pages/dashboard/one'));
+const HubView = lazy(() => import('src/pages/dashboard/hub'));
 const PageTwo = lazy(() => import('src/pages/dashboard/two'));
 const PageThree = lazy(() => import('src/pages/dashboard/three'));
 const UsersView = lazy(() => import('src/pages/dashboard/users'));
@@ -31,11 +31,12 @@ export const dashboardRoutes = [
       </AuthGuard>
     ),
     children: [
-      { element: <IndexPage />, index: true },
+      { element: <HubView />, index: true },
+      { path: 'hub', element: <HubView /> },
       { path: 'two', element: <PageTwo /> },
       { path: 'three', element: <PageThree /> },
       {
-        path: 'group',
+        path: 'admin',
         children: [
           { element: <UsersView />, index: true },
           { path: 'five', element: <PageFive /> },
